@@ -22,6 +22,7 @@ namespace HDR_UK_Web_Application.Controllers
         [HttpGet("{id}", Name = "GetObservations")]
         public async Task<List<JObject>> GetObservations(string id)
         {
+           
             return await _service.GetPatientObservations(id);
         }
 

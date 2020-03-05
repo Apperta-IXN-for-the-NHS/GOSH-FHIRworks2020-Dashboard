@@ -11,8 +11,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+
 using Microsoft.IdentityModel.Tokens;
 using NLog;
+
 
 namespace HDR_UK_Web_Application
 {
@@ -47,7 +50,7 @@ namespace HDR_UK_Web_Application
             services.AddTransient<IResourceFetchService, ResourceFetchService>();
             services.AddTransient<IPatientService, PatientService>();
             services.AddTransient<IObservationService, ObservationService>();
-
+             services.AddDirectoryBrowser();
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins, builder =>
@@ -67,10 +70,24 @@ namespace HDR_UK_Web_Application
                 app.UseDeveloperExceptionPage();
             }
             else
-            { 
+            {
                 app.UseHsts();
             }
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+             Path.Combine(Directory.GetCurrentDirectory(), "Logs")),
+                RequestPath = "/Logs"
+            });
 
+            app.UseDirectoryBrowser(new DirectoryBrowserOptions
+    {
+            FileProvider = new PhysicalFileProvider(
+            Path.Combine(Directory.GetCurrentDirectory(), "Logs")),
+                 RequestPath = "/Logs"  
+    });
             app.UseCors(MyAllowSpecificOrigins);
 
             //app.UseHttpsRedirection();
